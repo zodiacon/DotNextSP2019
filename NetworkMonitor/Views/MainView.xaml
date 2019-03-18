@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="NetworkMonitor.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:NetworkMonitor.Views"
+             xmlns:vm="clr-namespace:NetworkMonitor.ViewModels"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <vm:MainViewModel />
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock" x:Key="RightAlignTextBlock">
+                <Setter Property="TextAlignment" Value="Right" />
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ToggleButton Margin="2" Content="Capture" IsChecked="{Binding IsRunning}" Style="{StaticResource MetroFlatToggleButton}"/>
+            <Button Margin="10,2,2,2" Content="Clear Inactive Connections" Style="{StaticResource MetroFlatButton}" Command="{Binding ClearInactiveConnectionsCommand}" />
+            <Button Margin="2" Content="Clear All" Style="{StaticResource MetroFlatButton}" Command="{Binding ClearAllCommand}" />
+        </StackPanel>
+        <DataGrid Grid.Row="2" AutoGenerateColumns="False" ItemsSource="{Binding ActiveConnections}" IsReadOnly="True" SelectionUnit="FullRow" Margin="2"
+                  metro:ButtonHelper.PreserveTextCase="True">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource MetroDataGridRow}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsActive}" Value="False">
+                            <Setter Property="Background" Value="#80ff0000" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Connect Time" Binding="{Binding ConnectTime}" />
+                <DataGridTextColumn Header="Connection Type" Binding="{Binding ConnectionType}" />
+                <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}" />
+                <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" ElementStyle="{StaticResource RightAlignTextBlock}" />
+                <DataGridTextColumn Header="Local Address" Binding="{Binding LocalAddressFull}" />
+                <DataGridTextColumn Header="Remote Address" Binding="{Binding RemoteAddressFull}" />
+                <DataGridTextColumn Header="Remote Host" Binding="{Binding RemoteAddressDns}" />
+                <DataGridTextColumn Header="Sent Bytes" Binding="{Binding SentBytes}" ElementStyle="{StaticResource RightAlignTextBlock}" />
+                <DataGridTextColumn Header="Receive Bytes" Binding="{Binding RecvBytes}" ElementStyle="{StaticResource RightAlignTextBlock}" />
+                <DataGridTextColumn Header="Disconnect Time" Binding="{Binding DisconnectTime}" />
+                <DataGridTextColumn Header="Connection Length" Binding="{Binding ConnectionTime}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <StatusBar Grid.Row="3">
+            <TextBlock Text="{Binding ActiveConnections.Count, StringFormat=Total Connections: \{0\}}" />
+            <Separator />
+            <TextBlock Text="{Binding OpenConnections, StringFormat=Open Connections: \{0\}}" />
+        </StatusBar>
+    </Grid>
+</UserControl>

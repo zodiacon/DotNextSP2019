@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="DebugPrint.Views.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DebugPrint.Views"
+             xmlns:vm="clr-namespace:DebugPrint.ViewModels"
+             xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <vm:MainViewModel />
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ToggleButton Margin="2" Content="Capture Kernel" IsChecked="{Binding IsRunningKernel}" Style="{StaticResource MetroFlatToggleButton}" />
+            <ToggleButton Margin="2" Content="Capture user" IsChecked="{Binding IsRunningUser}" Style="{StaticResource MetroFlatToggleButton}" />
+            <Button Margin="10,2,2,2" Content="Clear All" Command="{Binding ClearAllCommand}" Style="{StaticResource MetroFlatButton}" />
+        </StackPanel>
+        <TextBox Grid.Row="1" Text="{Binding SearchText, Delay=300, UpdateSourceTrigger=PropertyChanged}" Width="300" Margin="2"
+                 metro:TextBoxHelper.Watermark="Type to filter" metro:TextBoxHelper.ClearTextButton="True" HorizontalAlignment="Left" />
+        <DataGrid Grid.Row="2" Margin="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding DebugItems}" metro:ButtonHelper.PreserveTextCase="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Time" Binding="{Binding Time}" MinWidth="80" />
+                <DataGridTextColumn Header="User/Kernel" Binding="{Binding KernelOrUser}" MinWidth="80" />
+                <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" MinWidth="80"/>
+                <DataGridTextColumn Header="TID" Binding="{Binding ThreadId}" MinWidth="80" />
+                <DataGridTextColumn Header="Component" Binding="{Binding ComponentAsString}" />
+                <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}" MinWidth="100" />
+                <DataGridTextColumn Header="Text" Binding="{Binding Text}" MinWidth="200" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <StatusBar Grid.Row="3">
+            <TextBlock Text="{Binding DebugItems.Count, StringFormat=Items: \{0\}}" />
+        </StatusBar>
+    </Grid>
+</UserControl>
