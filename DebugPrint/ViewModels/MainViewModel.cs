@@ -1,5 +1,6 @@
 ﻿using Microsoft.O365.Security.ETW;
 using Microsoft.O365.Security.ETW.Kernel;
+using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,7 @@ namespace DebugPrint.ViewModels {
 				ProcessId = (int)record.ProcessId,
 				ProcessName = TryGetProcessName(record.ProcessId),
 				ThreadId = (int)record.ThreadId,
-				Text = record.GetAnsiString("Message").TrimEnd('\n'),
+				Text = record.GetAnsiString("Message").TrimEnd('\n', '\r'),
 				Component = record.GetUInt32("Component", 0),
 				IsKernel = true
 			};
@@ -64,6 +65,8 @@ namespace DebugPrint.ViewModels {
 		public void Dispose() {
 			_trace.Dispose();
 			_stopEvent?.Dispose();
+			_bufferReadyEvent?.Dispose();
+			_dataReadyEvent?.Dispose();
 			_stm?.Dispose();
 			_mmf?.Dispose();
 		}
@@ -86,6 +89,8 @@ namespace DebugPrint.ViewModels {
 				}
 			}
 		}
+
+		public DelegateCommand ClearAllCommand => new DelegateCommand(() => DebugItems.Clear());
 
 		bool _isRunningKernel, _isRunningUser;
 		public bool IsRunningKernel {
@@ -116,7 +121,7 @@ namespace DebugPrint.ViewModels {
 							var bytes = new byte[_bufferSize];
 							do {
 								_bufferReadyEvent.Set();
-								if (_dataReadyEvent.WaitOne(500)) {
+								if (_dataReadyEvent.WaitOne(400)) {
 									var time = DateTime.Now;
 									_stm.Position = 0;
 									var pid = reader.ReadInt32();

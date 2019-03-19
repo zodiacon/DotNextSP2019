@@ -35,6 +35,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icons\app.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
@@ -113,6 +119,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -122,6 +129,24 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Icons\copy.ico" />
+    <Resource Include="Icons\cut.ico" />
+    <Resource Include="Icons\delete.ico" />
+    <Resource Include="Icons\open.ico" />
+    <Resource Include="Icons\pin-red.ico" />
+    <Resource Include="Icons\save-as.ico" />
+    <Resource Include="Icons\save.ico" />
+    <Resource Include="Icons\select-all.ico" />
+    <Resource Include="Icons\select-invert.ico" />
+    <Resource Include="Icons\select-none.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\start-kernel.ico" />
+    <Resource Include="Icons\start-user.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

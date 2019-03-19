@@ -15,6 +15,7 @@ namespace DebugPrint.ViewModels {
 		public DateTime Time { get; set; }
 		public uint? Component { get; set; }
 		public string ComponentAsString => Component == null ? string.Empty : ("0x" + Component.ToString());
+		public string TimeAsString => Time.ToString("G") + "." + Time.Millisecond.ToString("D3");
 	}
 }
 

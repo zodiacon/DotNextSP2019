@@ -8,9 +8,6 @@
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <vm:MainViewModel />
-    </UserControl.DataContext>
     <Grid>
         <Grid.Resources>
             <Style TargetType="TextBlock" x:Key="RightAlignTextBlock">
@@ -24,8 +21,17 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <ToggleButton Margin="2" Content="Capture" IsChecked="{Binding IsRunning}" Style="{StaticResource MetroFlatToggleButton}"/>
-            <Button Margin="10,2,2,2" Content="Clear Inactive Connections" Style="{StaticResource MetroFlatButton}" Command="{Binding ClearInactiveConnectionsCommand}" />
+            <ToggleButton Margin="2" IsChecked="{Binding IsRunning}" Style="{StaticResource MetroFlatToggleButton}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/icons/capture.ico" Width="20" Height="20" />
+                    <TextBlock Text="Capture" Margin="4,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </ToggleButton>
+            <ToggleButton Margin="2" Content="TCP/IP V4" Style="{StaticResource MetroFlatToggleButton}" IsChecked="{Binding MonitorTcpV4}" />
+            <ToggleButton Margin="2" Content="TCP/IP V6" Style="{StaticResource MetroFlatToggleButton}" IsChecked="{Binding MonitorTcpV6}" />
+            <ToggleButton Margin="2" Content="UDP V4" Style="{StaticResource MetroFlatToggleButton}" IsChecked="{Binding MonitorUdpV4}" />
+            <ToggleButton Margin="2" Content="UDP V6" Style="{StaticResource MetroFlatToggleButton}" IsChecked="{Binding MonitorUdpV6}" />
+            <Button Margin="10,2,2,2" Content="Clear Inactive" Style="{StaticResource MetroFlatButton}" Command="{Binding ClearInactiveConnectionsCommand}" />
             <Button Margin="2" Content="Clear All" Style="{StaticResource MetroFlatButton}" Command="{Binding ClearAllCommand}" />
         </StackPanel>
         <DataGrid Grid.Row="2" AutoGenerateColumns="False" ItemsSource="{Binding ActiveConnections}" IsReadOnly="True" SelectionUnit="FullRow" Margin="2"
@@ -34,14 +40,14 @@
                 <Style TargetType="DataGridRow" BasedOn="{StaticResource MetroDataGridRow}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsActive}" Value="False">
-                            <Setter Property="Background" Value="#80ff0000" />
+                            <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Connect Time" Binding="{Binding ConnectTime}" />
-                <DataGridTextColumn Header="Connection Type" Binding="{Binding ConnectionType}" />
+                <DataGridTextColumn Header="Connect Time" Binding="{Binding ConnectTimeAsString}" SortMemberPath="ConnectTime" />
+                <DataGridTextColumn Header="Type" Binding="{Binding ConnectionType}" />
                 <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}" />
                 <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" ElementStyle="{StaticResource RightAlignTextBlock}" />
                 <DataGridTextColumn Header="Local Address" Binding="{Binding LocalAddressFull}" />
@@ -49,8 +55,8 @@
                 <DataGridTextColumn Header="Remote Host" Binding="{Binding RemoteAddressDns}" />
                 <DataGridTextColumn Header="Sent Bytes" Binding="{Binding SentBytes}" ElementStyle="{StaticResource RightAlignTextBlock}" />
                 <DataGridTextColumn Header="Receive Bytes" Binding="{Binding RecvBytes}" ElementStyle="{StaticResource RightAlignTextBlock}" />
-                <DataGridTextColumn Header="Disconnect Time" Binding="{Binding DisconnectTime}" />
-                <DataGridTextColumn Header="Connection Length" Binding="{Binding ConnectionTime}" />
+                <DataGridTextColumn Header="Disconnect Time" Binding="{Binding DisconnectTimeAsString}" SortMemberPath="DisconnectTime" />
+                <DataGridTextColumn Header="Connection Length" Binding="{Binding ConnectionTime}" ElementStyle="{StaticResource RightAlignTextBlock}" />
             </DataGrid.Columns>
         </DataGrid>
         <StatusBar Grid.Row="3">

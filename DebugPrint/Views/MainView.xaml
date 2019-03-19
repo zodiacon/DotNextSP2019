@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DebugPrint.Views"
              xmlns:vm="clr-namespace:DebugPrint.ViewModels"
+             xmlns:z="http://zodiacon.wpf/2016"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -12,31 +13,64 @@
         <vm:MainViewModel />
     </UserControl.DataContext>
     <Grid>
+        <Grid.Resources>
+            <Style TargetType="TextBlock" x:Key="RightAlignTextBlock">
+                <Setter Property="TextAlignment" Value="Right" />
+            </Style>
+            <Style TargetType="TextBlock" x:Key="WrappingTextBlock">
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+        </Grid.Resources>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
-            <ToggleButton Margin="2" Content="Capture Kernel" IsChecked="{Binding IsRunningKernel}" Style="{StaticResource MetroFlatToggleButton}" />
-            <ToggleButton Margin="2" Content="Capture user" IsChecked="{Binding IsRunningUser}" Style="{StaticResource MetroFlatToggleButton}" />
-            <Button Margin="10,2,2,2" Content="Clear All" Command="{Binding ClearAllCommand}" Style="{StaticResource MetroFlatButton}" />
+        <Menu z:InputHelper.AttachInputBindings="True">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open..." Icon="{z:Image /icons/open.ico, Width=20, Height=20}" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="_Save" Icon="{z:Image /icons/save.ico, Width=20, Height=20}" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
+                <MenuItem Header="Save _As..." Icon="{z:Image /icons/save-as.ico, Width=20, Height=20}" Command="{Binding SaveAsCommand}" InputGestureText="F12" />
+                <Separator />
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}" InputGestureText="Alt+F4" />
+            </MenuItem>
+        </Menu>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <ToggleButton Margin="2" IsChecked="{Binding IsRunningKernel}" Style="{StaticResource MetroFlatToggleButton}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/icons/start-kernel.ico" Width="20" Height="20" />
+                    <TextBlock Text="Capture Kernel" Margin="4,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </ToggleButton>
+            <ToggleButton Margin="2" IsChecked="{Binding IsRunningUser}" Style="{StaticResource MetroFlatToggleButton}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/icons/start-user.ico" Width="20" Height="20" />
+                    <TextBlock Text="Capture User" Margin="4,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </ToggleButton>
+            <Button Margin="10,2,2,2" Command="{Binding ClearAllCommand}" Style="{StaticResource MetroFlatButton}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/icons/delete.ico" Width="20" Height="20" />
+                    <TextBlock Text="Clear All" Margin="4,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
         </StackPanel>
-        <TextBox Grid.Row="1" Text="{Binding SearchText, Delay=300, UpdateSourceTrigger=PropertyChanged}" Width="300" Margin="2"
+        <TextBox Grid.Row="2" Text="{Binding SearchText, Delay=300, UpdateSourceTrigger=PropertyChanged}" Width="300" Margin="2"
                  metro:TextBoxHelper.Watermark="Type to filter" metro:TextBoxHelper.ClearTextButton="True" HorizontalAlignment="Left" />
-        <DataGrid Grid.Row="2" Margin="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding DebugItems}" metro:ButtonHelper.PreserveTextCase="True">
+        <DataGrid Grid.Row="3" Margin="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding DebugItems}" metro:ButtonHelper.PreserveTextCase="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Time" Binding="{Binding Time}" MinWidth="80" />
-                <DataGridTextColumn Header="User/Kernel" Binding="{Binding KernelOrUser}" MinWidth="80" />
-                <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" MinWidth="80"/>
-                <DataGridTextColumn Header="TID" Binding="{Binding ThreadId}" MinWidth="80" />
-                <DataGridTextColumn Header="Component" Binding="{Binding ComponentAsString}" />
-                <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}" MinWidth="100" />
-                <DataGridTextColumn Header="Text" Binding="{Binding Text}" MinWidth="200" />
+                <DataGridTextColumn Header="Time" Binding="{Binding TimeAsString}" MinWidth="80" SortMemberPath="Time" FontFamily="Consolas" />
+                <DataGridTextColumn Header="U / K" Binding="{Binding KernelOrUser}" MinWidth="60" FontFamily="Consolas" />
+                <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" MinWidth="80" ElementStyle="{StaticResource RightAlignTextBlock}" FontFamily="Consolas" />
+                <DataGridTextColumn Header="TID" Binding="{Binding ThreadId}" MinWidth="80" ElementStyle="{StaticResource RightAlignTextBlock}" FontFamily="Consolas" />
+                <DataGridTextColumn Header="Component" Binding="{Binding ComponentAsString}" MinWidth="40" SortMemberPath="Component" FontFamily="Consolas" />
+                <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}" MinWidth="100" FontWeight="Bold" FontFamily="Consolas" />
+                <DataGridTextColumn Header="Text" Binding="{Binding Text}" MinWidth="200" MaxWidth="1600" ElementStyle="{StaticResource WrappingTextBlock}" />
             </DataGrid.Columns>
         </DataGrid>
-        <StatusBar Grid.Row="3">
+        <StatusBar Grid.Row="4">
             <TextBlock Text="{Binding DebugItems.Count, StringFormat=Items: \{0\}}" />
         </StatusBar>
     </Grid>

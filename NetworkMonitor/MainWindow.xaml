@@ -5,7 +5,38 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:view="clr-namespace:NetworkMonitor.Views"
+        xmlns:vm="clr-namespace:NetworkMonitor.ViewModels"
         mc:Ignorable="d" ResizeMode="CanResizeWithGrip" TitleCaps="False"
-        Title="Network Monitor" MinHeight="450" MinWidth="800">
+        xmlns:z="http://zodiacon.wpf/2016" x:Name="This"
+        Title="Network Monitor v0.1 (C)2019 Pavel Yosifovich" MinHeight="450" MinWidth="800"
+        Icon="/icons/app.ico" >
+    <metro:MetroWindow.Resources>
+        <z:BindingProxy x:Key="Proxy" Data="{Binding}" />
+    </metro:MetroWindow.Resources>
+    <metro:MetroWindow.RightWindowCommands>
+        <metro:WindowCommands>
+            <ToggleButton Style="{StaticResource MetroFlatToggleButton}" Command="{Binding AlwaysOnTopCommand}" CommandParameter="{Binding ElementName=This}" ToolTip="Always On Top">
+                <Image Source="/icons/pin-red.ico" Width="16" Height="16" />
+            </ToggleButton>
+            <metro:DropDownButton Content="Theme" ItemsSource="{Binding Themes}" DisplayMemberPath="Name">
+                <metro:DropDownButton.ItemContainerStyle>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource MetroMenuItem}">
+                        <Setter Property="Command" Value="{Binding Data.ChangeThemeCommand, Source={StaticResource Proxy}}" />
+                        <Setter Property="CommandParameter" Value="{Binding}" />
+                    </Style>
+                </metro:DropDownButton.ItemContainerStyle>
+            </metro:DropDownButton>
+            <metro:DropDownButton Content="Accent Color" ItemsSource="{Binding Accents}" >
+                <metro:DropDownButton.ItemContainerStyle>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource MetroMenuItem}">
+                        <Setter Property="IsCheckable" Value="False" />
+                        <Setter Property="IsChecked" Value="{Binding IsCurrent, Mode=OneWay}" />
+                        <Setter Property="Command" Value="{Binding DataContext.ChangeAccentCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type metro:MetroWindow}}}" />
+                        <Setter Property="CommandParameter" Value="{Binding}" />
+                    </Style>
+                </metro:DropDownButton.ItemContainerStyle>
+            </metro:DropDownButton>
+        </metro:WindowCommands>
+    </metro:MetroWindow.RightWindowCommands>
     <view:MainView />
 </metro:MetroWindow>

@@ -21,5 +21,6 @@ namespace DebugPrint.Views {
 		public MainView() {
 			InitializeComponent();
 		}
+
 	}
 }

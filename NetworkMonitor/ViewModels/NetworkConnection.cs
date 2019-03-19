@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace NetworkMonitor.ViewModels {
-	enum ConnectionType {
-		TcpipV4,
-		TcpipV6,
-		UDP
+	[Flags]
+	public enum ConnectionType {
+		TcpIpV4 = 1,
+		TcpIpV6 = 2,
+		UdpV4 = 4,
+		UdpV6 = 8
 	}
 
 	class ConnectionKey : IEquatable<ConnectionKey> {
@@ -51,8 +53,10 @@ namespace NetworkMonitor.ViewModels {
 		public DateTime? DisconnectTime {
 			get => _disconnectTime;
 			set {
-				if (SetProperty(ref _disconnectTime, value))
+				if (SetProperty(ref _disconnectTime, value)) {
 					RaisePropertyChanged(nameof(ConnectionTime));
+					RaisePropertyChanged(nameof(DisconnectTimeAsString));
+				}
 			}
 		}
 
@@ -79,6 +83,9 @@ namespace NetworkMonitor.ViewModels {
 
 		ConnectionKey _key;
 		public ConnectionKey Key => _key ?? (_key = new ConnectionKey(RemoteAddress, ProcessId, LocalPort, RemotePort));
+
+		public string ConnectTimeAsString => ConnectTime.ToString("G") + "." + ConnectTime.Millisecond.ToString("D3");
+		public string DisconnectTimeAsString => DisconnectTime != null ? DisconnectTime.Value.ToString("G") + "." + DisconnectTime.Value.Millisecond.ToString("D3") : string.Empty;
 
 		//public Brush RowBackground => IsActive ? Brushes.Transparent : Brushes.Red;
 
