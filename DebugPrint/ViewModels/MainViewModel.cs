@@ -1,8 +1,10 @@
 ﻿using Microsoft.O365.Security.ETW;
 using Microsoft.O365.Security.ETW.Kernel;
+using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -12,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
 
@@ -90,7 +93,73 @@ namespace DebugPrint.ViewModels {
 			}
 		}
 
+		IList _selectedItems;
+		public IList SelectedItems {
+			get => _selectedItems;
+			set {
+				SetProperty(ref _selectedItems, value);
+				RaisePropertyChanged(nameof(CanCopy));
+			}
+		}
+
+		public bool CanCopy => SelectedItems?.Count > 0;
+
+		public DelegateCommand CopyCommand => new DelegateCommand(() => {
+			var text = SelectedItems.Cast<DebugItem>().Aggregate(new StringBuilder(512), (sb, item) => sb.Append(item.ToString()).Append(Environment.NewLine));
+			Clipboard.SetText(text.ToString());
+		}).ObservesCanExecute(() => CanCopy);
+
+		public DelegateCommand CutCommand => new DelegateCommand(() => {
+			CopyCommand.Execute();
+			foreach (var item in SelectedItems.Cast<DebugItem>().ToArray())
+				DebugItems.Remove(item);
+		}).ObservesCanExecute(() => CanCopy);
+
 		public DelegateCommand ClearAllCommand => new DelegateCommand(() => DebugItems.Clear());
+		public DelegateCommand ExitCommand => new DelegateCommand(() => Application.Current.Shutdown());
+
+		public DelegateCommand SaveCommand => new DelegateCommand(() => {
+			var filename = ShowSaveDialog();
+			if(filename != null)
+				DoSave(filename, false);
+		});
+
+		public DelegateCommand SaveFilteredCommand => new DelegateCommand(() => {
+			var filename = ShowSaveDialog();
+			if (filename != null)
+				DoSave(filename, true);
+		});
+
+		string ShowSaveDialog() {
+			var dlg = new SaveFileDialog {
+				Title = "Select File",
+				DefaultExt = ".txt",
+				Filter = "Text files|*.txt|All Files|*.*",
+				OverwritePrompt = true
+			};
+			return dlg.ShowDialog() == true ? dlg.FileName : null;
+		}
+
+		void DoSave(string filename, bool filtered) {
+			try {
+				var view = CollectionViewSource.GetDefaultView(DebugItems);
+				using (var writer = File.CreateText(filename)) {
+					// write headers
+					writer.WriteLine("Time,User/kernel,PID,TID,Component,Process Name,Text");
+					foreach (var item in DebugItems)
+						if (!filtered || view.Filter?.Invoke(item) == true)
+							writer.WriteLine(item.ToString(","));
+				}
+			}
+			catch (IOException ex) {
+				MessageBox.Show(ex.Message, Constants.AppTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+		}
+
+		public bool AlwaysOnTop {
+			get => Application.Current.MainWindow.Topmost;
+			set => Application.Current.MainWindow.Topmost = value;
+		}
 
 		bool _isRunningKernel, _isRunningUser;
 		public bool IsRunningKernel {
@@ -146,6 +215,7 @@ namespace DebugPrint.ViewModels {
 					}
 				}
 			}
+
 		}
 	}
 }

@@ -58,6 +58,9 @@ namespace NetworkMonitor.ViewModels {
 						parser.TcpIpSendIPV6 += OnSendIPV6;
 						parser.TcpIpSend += OnSend;
 						parser.UdpIpSend += OnUdpSend;
+						parser.UdpIpRecv += OnUdpRecv;
+						parser.UdpIpSendIPV6 += OnUdpSendIPV6;
+						parser.UdpIpRecvIPV6 += OnUdpRecvIPV6;
 					}
 					if (value) {
 						var t = new Thread(() => _session.Source.Process());
@@ -70,6 +73,63 @@ namespace NetworkMonitor.ViewModels {
 					}
 				}
 			}
+		}
+
+		NetworkConnection CreateUdpConnection(UpdIpV6TraceData obj) {
+			var conn = new NetworkConnection {
+				ConnectionType = ConnectionType.UdpV6,
+				ConnectTime = obj.TimeStamp,
+				ProcessId = obj.ProcessID,
+				ProcessName = obj.ProcessName,
+				LocalAddress = obj.saddr,
+				RemoteAddress = obj.daddr,
+				RemotePort = obj.dport,
+				LocalPort = obj.sport,
+				IsActive = false
+			};
+			return conn;
+		}
+
+		NetworkConnection CreateUdpConnection(UdpIpTraceData obj) {
+			var conn = new NetworkConnection {
+				ConnectionType = ConnectionType.UdpV4,
+				ConnectTime = obj.TimeStamp,
+				ProcessId = obj.ProcessID,
+				ProcessName = obj.ProcessName,
+				LocalAddress = obj.saddr,
+				RemoteAddress = obj.daddr,
+				RemotePort = obj.dport,
+				LocalPort = obj.sport,
+				IsActive = false
+			};
+			return conn;
+		}
+
+		private void OnUdpRecvIPV6(UpdIpV6TraceData obj) {
+			if (!MonitoredConnections.HasFlag(ConnectionType.UdpV6))
+				return;
+
+			var conn = CreateUdpConnection(obj);
+			conn.RecvBytes = obj.size;
+			_dispatcher.InvokeAsync(() => AddConnection(conn));
+		}
+
+		private void OnUdpSendIPV6(UpdIpV6TraceData obj) {
+			if (!MonitoredConnections.HasFlag(ConnectionType.UdpV6))
+				return;
+
+			var conn = CreateUdpConnection(obj);
+			conn.SentBytes = obj.size;
+			_dispatcher.InvokeAsync(() => AddConnection(conn));
+		}
+
+		private void OnUdpRecv(UdpIpTraceData obj) {
+			if (!MonitoredConnections.HasFlag(ConnectionType.UdpV4))
+				return;
+
+			var conn = CreateUdpConnection(obj);
+			conn.RecvBytes = obj.size;
+			_dispatcher.InvokeAsync(() => AddConnection(conn));
 		}
 
 		private void OnSendIPV6(TcpIpV6SendTraceData info) {
@@ -99,18 +159,8 @@ namespace NetworkMonitor.ViewModels {
 			if (!MonitoredConnections.HasFlag(ConnectionType.UdpV4))
 				return;
 
-			var conn = new NetworkConnection {
-				ConnectionType = ConnectionType.UdpV4,
-				ConnectTime = obj.TimeStamp,
-				ProcessId = obj.ProcessID,
-				ProcessName = obj.ProcessName,
-				LocalAddress = obj.saddr,
-				RemoteAddress = obj.daddr,
-				RemotePort = obj.dport,
-				LocalPort = obj.sport,
-				SentBytes = obj.size,
-				IsActive = false
-			};
+			var conn = CreateUdpConnection(obj);
+			conn.SentBytes = obj.size;
 			_dispatcher.InvokeAsync(() => AddConnection(conn));
 
 		}
@@ -193,18 +243,17 @@ namespace NetworkMonitor.ViewModels {
 
 		private async void AddConnection(NetworkConnection conn) {
 			ActiveConnections.Add(conn);
-			if (conn.ConnectionType != ConnectionType.UdpV4) {
+			if (conn.IsActive) {
 				_connectionMap.Add(conn.Key, ActiveConnections.Count - 1);
 				RaisePropertyChanged(nameof(OpenConnections));
 			}
-			var item = ActiveConnections.Last();
 			try {
 				if (!_dnsCache.TryGetValue(conn.RemoteAddress, out var name)) {
 					var iphost = await Dns.GetHostEntryAsync(conn.RemoteAddress);
 					name = iphost.HostName;
 					_dnsCache.Add(conn.RemoteAddress, name);
 				}
-				item.RemoteAddressDns = name;
+				conn.RemoteAddressDns = name;
 			}
 			catch { }
 		}

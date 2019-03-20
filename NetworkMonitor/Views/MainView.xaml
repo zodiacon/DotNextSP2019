@@ -35,7 +35,7 @@
             <Button Margin="2" Content="Clear All" Style="{StaticResource MetroFlatButton}" Command="{Binding ClearAllCommand}" />
         </StackPanel>
         <DataGrid Grid.Row="2" AutoGenerateColumns="False" ItemsSource="{Binding ActiveConnections}" IsReadOnly="True" SelectionUnit="FullRow" Margin="2"
-                  metro:ButtonHelper.PreserveTextCase="True">
+                  metro:ButtonHelper.PreserveTextCase="True" FontFamily="Consolas">
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow" BasedOn="{StaticResource MetroDataGridRow}">
                     <Style.Triggers>
@@ -54,7 +54,7 @@
                 <DataGridTextColumn Header="Remote Address" Binding="{Binding RemoteAddressFull}" />
                 <DataGridTextColumn Header="Remote Host" Binding="{Binding RemoteAddressDns}" />
                 <DataGridTextColumn Header="Sent Bytes" Binding="{Binding SentBytes}" ElementStyle="{StaticResource RightAlignTextBlock}" />
-                <DataGridTextColumn Header="Receive Bytes" Binding="{Binding RecvBytes}" ElementStyle="{StaticResource RightAlignTextBlock}" />
+                <DataGridTextColumn Header="Recv Bytes" Binding="{Binding RecvBytes}" ElementStyle="{StaticResource RightAlignTextBlock}" />
                 <DataGridTextColumn Header="Disconnect Time" Binding="{Binding DisconnectTimeAsString}" SortMemberPath="DisconnectTime" />
                 <DataGridTextColumn Header="Connection Length" Binding="{Binding ConnectionTime}" ElementStyle="{StaticResource RightAlignTextBlock}" />
             </DataGrid.Columns>

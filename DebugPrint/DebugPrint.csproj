@@ -80,6 +80,8 @@
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Compile Include="Behaviors\SelectedItemsBehavior.cs" />
+    <Compile Include="ViewModels\Constants.cs" />
     <Compile Include="ViewModels\DebugItem.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">

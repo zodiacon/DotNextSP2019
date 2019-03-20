@@ -16,6 +16,10 @@ namespace DebugPrint.ViewModels {
 		public uint? Component { get; set; }
 		public string ComponentAsString => Component == null ? string.Empty : ("0x" + Component.ToString());
 		public string TimeAsString => Time.ToString("G") + "." + Time.Millisecond.ToString("D3");
+
+		public string ToString(string sep) => $"{TimeAsString}{sep}{KernelOrUser}{sep}{ProcessId}{sep}{ProcessName}{sep}{ThreadId}{sep}{ComponentAsString}{sep}{Text}";
+
+		public override string ToString() => ToString(" ");
 	}
 }
 

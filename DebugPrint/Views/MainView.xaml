@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DebugPrint.Views"
              xmlns:vm="clr-namespace:DebugPrint.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:z="http://zodiacon.wpf/2016"
+             xmlns:b="clr-namespace:DebugPrint.Behaviors"
              xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -30,27 +32,42 @@
         </Grid.RowDefinitions>
         <Menu z:InputHelper.AttachInputBindings="True">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open..." Icon="{z:Image /icons/open.ico, Width=20, Height=20}" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
-                <MenuItem Header="_Save" Icon="{z:Image /icons/save.ico, Width=20, Height=20}" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
-                <MenuItem Header="Save _As..." Icon="{z:Image /icons/save-as.ico, Width=20, Height=20}" Command="{Binding SaveAsCommand}" InputGestureText="F12" />
+                <MenuItem Header="_Open..." Icon="{z:Image /icons/open.ico, Width=16, Height=16}" Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="_Save All..." Icon="{z:Image /icons/save.ico, Width=16, Height=16}" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
+                <MenuItem Header="Save _Filtered..." Command="{Binding SaveFilteredCommand}" />
                 <Separator />
                 <MenuItem Header="E_xit" Command="{Binding ExitCommand}" InputGestureText="Alt+F4" />
             </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Copy" Icon="{z:Image /icons/copy.ico, Width=16, Height=16}" Command="{Binding CopyCommand}" InputGestureText="Ctrl+C" />
+                <MenuItem Header="Cu_t" Icon="{z:Image /icons/cut.ico, Width=16, Height=16}" Command="{Binding CutCommand}" InputGestureText="Ctrl+X" />
+                <Separator />
+                <MenuItem Header="Clear All" Icon="{z:Image /icons/delete.ico, Width=16, Height=16}" Command="{Binding ClearAllCommand}" />
+            </MenuItem>
+            <MenuItem Header="_Capture">
+                <MenuItem Header="Capture _Kernel Mode" IsChecked="{Binding IsRunningKernel}" IsCheckable="True" />
+                <MenuItem Header="Capture _User Mode" IsChecked="{Binding IsRunningUser}" IsCheckable="True" />
+            </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="_Always On Top" IsCheckable="True" IsChecked="{Binding AlwaysOnTop}" />
+            </MenuItem>
         </Menu>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
-            <ToggleButton Margin="2" IsChecked="{Binding IsRunningKernel}" Style="{StaticResource MetroFlatToggleButton}">
+            <ToggleButton Margin="2" IsChecked="{Binding IsRunningKernel}" Style="{StaticResource MetroFlatToggleButton}" ToolTip="Capture Kernel Mode">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/icons/start-kernel.ico" Width="20" Height="20" />
                     <TextBlock Text="Capture Kernel" Margin="4,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
             </ToggleButton>
-            <ToggleButton Margin="2" IsChecked="{Binding IsRunningUser}" Style="{StaticResource MetroFlatToggleButton}">
+            <ToggleButton Margin="2" IsChecked="{Binding IsRunningUser}" Style="{StaticResource MetroFlatToggleButton}" ToolTip="Capture User Mode">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/icons/start-user.ico" Width="20" Height="20" />
                     <TextBlock Text="Capture User" Margin="4,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
             </ToggleButton>
-            <Button Margin="10,2,2,2" Command="{Binding ClearAllCommand}" Style="{StaticResource MetroFlatButton}">
+            <Button Margin="2" Content="{z:Image /icons/copy.ico, Width=20, Height=20}" Command="{Binding CopyCommand}" Style="{StaticResource MetroFlatButton}" ToolTip="Copy" />
+            
+            <Button Margin="20,2,2,2" Command="{Binding ClearAllCommand}" Style="{StaticResource MetroFlatButton}" ToolTip="Clear All">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/icons/delete.ico" Width="20" Height="20" />
                     <TextBlock Text="Clear All" Margin="4,0,0,0" VerticalAlignment="Center" />
@@ -59,14 +76,26 @@
         </StackPanel>
         <TextBox Grid.Row="2" Text="{Binding SearchText, Delay=300, UpdateSourceTrigger=PropertyChanged}" Width="300" Margin="2"
                  metro:TextBoxHelper.Watermark="Type to filter" metro:TextBoxHelper.ClearTextButton="True" HorizontalAlignment="Left" />
-        <DataGrid Grid.Row="3" Margin="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding DebugItems}" metro:ButtonHelper.PreserveTextCase="True">
+        <DataGrid Grid.Row="3" Margin="2" AutoGenerateColumns="False" IsReadOnly="True" ItemsSource="{Binding DebugItems}" 
+                  metro:ButtonHelper.PreserveTextCase="True" FontFamily="Consolas">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Copy" Icon="{z:Image /icons/copy.ico, Width=16, Height=16}" Command="{Binding CopyCommand}" />
+                    <MenuItem Header="Cut" Icon="{z:Image /icons/cut.ico, Width=16, Height=16}" Command="{Binding CutCommand}" />
+                    <Separator />
+                    <MenuItem Header="Clear All" Icon="{z:Image /icons/delete.ico, Width=16, Height=16}" Command="{Binding ClearAllCommand}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <i:Interaction.Behaviors>
+                <b:SelectedItemsBehavior SelectedItems="{Binding SelectedItems, Mode=OneWayToSource}" />
+            </i:Interaction.Behaviors>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Time" Binding="{Binding TimeAsString}" MinWidth="80" SortMemberPath="Time" FontFamily="Consolas" />
+                <DataGridTextColumn Header="Time" Binding="{Binding TimeAsString}" MinWidth="80" SortMemberPath="Time"  />
                 <DataGridTextColumn Header="U / K" Binding="{Binding KernelOrUser}" MinWidth="60" FontFamily="Consolas" />
-                <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" MinWidth="80" ElementStyle="{StaticResource RightAlignTextBlock}" FontFamily="Consolas" />
-                <DataGridTextColumn Header="TID" Binding="{Binding ThreadId}" MinWidth="80" ElementStyle="{StaticResource RightAlignTextBlock}" FontFamily="Consolas" />
-                <DataGridTextColumn Header="Component" Binding="{Binding ComponentAsString}" MinWidth="40" SortMemberPath="Component" FontFamily="Consolas" />
-                <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}" MinWidth="100" FontWeight="Bold" FontFamily="Consolas" />
+                <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" MinWidth="80" ElementStyle="{StaticResource RightAlignTextBlock}"  />
+                <DataGridTextColumn Header="TID" Binding="{Binding ThreadId}" MinWidth="80" ElementStyle="{StaticResource RightAlignTextBlock}"  />
+                <DataGridTextColumn Header="Component" Binding="{Binding ComponentAsString}" MinWidth="40" SortMemberPath="Component"  />
+                <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}" MinWidth="100" FontWeight="Bold"  />
                 <DataGridTextColumn Header="Text" Binding="{Binding Text}" MinWidth="200" MaxWidth="1600" ElementStyle="{StaticResource WrappingTextBlock}" />
             </DataGrid.Columns>
         </DataGrid>
