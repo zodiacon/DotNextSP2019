@@ -1,4 +1,5 @@
-﻿using Microsoft.O365.Security.ETW;
+﻿using MahApps.Metro;
+using Microsoft.O365.Security.ETW;
 using Microsoft.O365.Security.ETW.Kernel;
 using Microsoft.Win32;
 using Prism.Commands;
@@ -16,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace DebugPrint.ViewModels {
@@ -195,7 +197,7 @@ namespace DebugPrint.ViewModels {
 									_stm.Position = 0;
 									var pid = reader.ReadInt32();
 									_stm.Read(bytes, 0, _bufferSize - sizeof(int));
-									int index = Array.IndexOf<byte>(bytes, (byte)0);
+									int index = Array.IndexOf(bytes, (byte)0);
 									var text = Encoding.ASCII.GetString(bytes, 0, index - 1).TrimEnd('\n', '\r');
 									var item = new DebugItem {
 										ProcessId = pid,
@@ -217,5 +219,27 @@ namespace DebugPrint.ViewModels {
 			}
 
 		}
+
+		public AccentViewModel[] Accents => ThemeManager.Accents.Select(a => new AccentViewModel(a)).ToArray();
+		public AppTheme[] Themes => ThemeManager.AppThemes.ToArray();
+
+		public AccentViewModel CurrentAccent { get; private set; }
+
+
+		public ICommand ChangeAccentCommand => new DelegateCommand<AccentViewModel>(accent => {
+			if (CurrentAccent != null)
+				CurrentAccent.IsCurrent = false;
+			CurrentAccent = accent;
+			accent.IsCurrent = true;
+			RaisePropertyChanged(nameof(CurrentAccent));
+		}, accent => accent != CurrentAccent).ObservesProperty(() => CurrentAccent);
+
+		public ICommand ChangeThemeCommand => new DelegateCommand<AppTheme>(theme => {
+			var style = ThemeManager.DetectAppStyle();
+			if (theme != style.Item1) {
+				ThemeManager.ChangeAppStyle(Application.Current, style.Item2, theme);
+			}
+		});
+
 	}
 }

@@ -39,9 +39,14 @@
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow" BasedOn="{StaticResource MetroDataGridRow}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsActive}" Value="False">
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsActive}" Value="False"/>
+                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="False" />
+                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="False" />
+                            </MultiDataTrigger.Conditions>
                             <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-                        </DataTrigger>
+                        </MultiDataTrigger>
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>

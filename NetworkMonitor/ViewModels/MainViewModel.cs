@@ -21,7 +21,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace NetworkMonitor.ViewModels {
-	class MainViewModel : BindableBase, IDisposable {
+	sealed class MainViewModel : BindableBase, IDisposable {
 		TraceEventSession _session;
 		Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 		bool _isRunning;
@@ -251,11 +251,13 @@ namespace NetworkMonitor.ViewModels {
 				if (!_dnsCache.TryGetValue(conn.RemoteAddress, out var name)) {
 					var iphost = await Dns.GetHostEntryAsync(conn.RemoteAddress);
 					name = iphost.HostName;
-					_dnsCache.Add(conn.RemoteAddress, name);
+					_dnsCache[conn.RemoteAddress] = name;
 				}
 				conn.RemoteAddressDns = name;
 			}
-			catch { }
+			catch {
+				_dnsCache[conn.RemoteAddress] = string.Empty;
+			}
 		}
 
 		public int OpenConnections => _connectionMap.Count;
@@ -383,8 +385,6 @@ namespace NetworkMonitor.ViewModels {
 			catch {
 			}
 		}
-
-
 
 	}
 }

@@ -81,6 +81,7 @@
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
     <Compile Include="Behaviors\SelectedItemsBehavior.cs" />
+    <Compile Include="ViewModels\AccentViewModel.cs" />
     <Compile Include="ViewModels\Constants.cs" />
     <Compile Include="ViewModels\DebugItem.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -99,6 +100,9 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Resources\Templates.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
