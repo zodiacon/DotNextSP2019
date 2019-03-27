@@ -1,4 +1,8 @@
-﻿using MahApps.Metro;
+﻿using DebugPrint.Filters;
+using DebugPrint.Models;
+using DebugPrint.Views;
+using Filtering.Core;
+using MahApps.Metro;
 using Microsoft.O365.Security.ETW;
 using Microsoft.O365.Security.ETW.Kernel;
 using Microsoft.Win32;
@@ -12,6 +16,8 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +25,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Zodiacon.WPF;
 
 namespace DebugPrint.ViewModels {
 	sealed class MainViewModel : BindableBase, IDisposable {
@@ -29,9 +36,13 @@ namespace DebugPrint.ViewModels {
 		readonly EventWaitHandle _dataReadyEvent, _bufferReadyEvent;
 		readonly MemoryMappedFile _mmf;
 		readonly MemoryMappedViewStream _stm;
+		readonly FilterManager _filterManager = new FilterManager();
+		readonly IUIServices UI;
+
 		const int _bufferSize = 1 << 12;
 
-		public MainViewModel() {
+		public MainViewModel(IUIServices ui) {
+			UI = ui;
 			_trace = new KernelTrace("DebugPrintTrace");
 			var provider = new DebugPrintProvider();
 			provider.OnEvent += OnEvent;
@@ -43,6 +54,8 @@ namespace DebugPrint.ViewModels {
 
 			_mmf = MemoryMappedFile.CreateOrOpen("DBWIN_BUFFER", _bufferSize);
 			_stm = _mmf.CreateViewStream();
+
+			//_filterManager.Filters.Add(new ProcessNameFilter(Relation.Equals, "devenv"));
 		}
 
 		private void OnEvent(IEventRecord record) {
@@ -55,12 +68,29 @@ namespace DebugPrint.ViewModels {
 				Component = record.GetUInt32("Component", 0),
 				IsKernel = true
 			};
-			_dispatcher.InvokeAsync(() => DebugItems.Add(item));
+			AddDebugItem(item);
 		}
+
+		void AddDebugItem(DebugItem item) {
+			foreach (var filter in _filterManager.Filters) {
+				if (filter.Eval(item)) {
+					_dispatcher.InvokeAsync(() => DebugItems.Add(item));
+					break;
+				}
+			}
+		}
+
+		public DelegateCommand ShowFiltersCommand => new DelegateCommand(() => {
+			var vm = UI.DialogService.CreateDialog<FilterEditingViewModel, FilterEditingView>();
+			if (vm.ShowDialog() == true) {
+				// update filters
+
+			}
+		});
 
 		private string TryGetProcessName(uint processId) {
 			try {
-				return Process.GetProcessById((int)processId)?.ProcessName;
+				return Process.GetProcessById((int)processId).ProcessName;
 			}
 			catch {
 				return string.Empty;
@@ -135,8 +165,8 @@ namespace DebugPrint.ViewModels {
 		string ShowSaveDialog() {
 			var dlg = new SaveFileDialog {
 				Title = "Select File",
-				DefaultExt = ".txt",
-				Filter = "Text files|*.txt|All Files|*.*",
+				DefaultExt = ".csv",
+				Filter = "CSV files|*.csv|All Files|*.*",
 				OverwritePrompt = true
 			};
 			return dlg.ShowDialog() == true ? dlg.FileName : null;
@@ -158,9 +188,13 @@ namespace DebugPrint.ViewModels {
 			}
 		}
 
+		bool _alwaysOnTop;
 		public bool AlwaysOnTop {
-			get => Application.Current.MainWindow.Topmost;
-			set => Application.Current.MainWindow.Topmost = value;
+			get => _alwaysOnTop;
+			set {
+				SetProperty(ref _alwaysOnTop, value);
+				Application.Current.MainWindow.Topmost = value;
+			}
 		}
 
 		bool _isRunningKernel, _isRunningUser;
@@ -205,7 +239,7 @@ namespace DebugPrint.ViewModels {
 										Time = time,
 										ProcessName = TryGetProcessName((uint)pid)
 									};
-									_dispatcher.InvokeAsync(() => DebugItems.Add(item));
+									AddDebugItem(item);
 								}
 							} while (!_stopEvent.WaitOne(0));
 						});
@@ -240,6 +274,50 @@ namespace DebugPrint.ViewModels {
 				ThemeManager.ChangeAppStyle(Application.Current, style.Item2, theme);
 			}
 		});
+
+		private string GetSettingsPath() {
+			var directory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\debugprint";
+			if (!Directory.Exists(directory))
+				Directory.CreateDirectory(directory);
+			return directory + @"\Settings.Xml";
+		}
+
+		public void LoadSettings() {
+			try {
+				using (var fs = File.OpenRead(GetSettingsPath())) {
+					var serializer = new DataContractSerializer(typeof(Settings));
+					var settings = serializer.ReadObject(fs) as Settings;
+					if (settings != null) {
+						AlwaysOnTop = settings.AlwaysOnTop;
+						var accent = Accents.FirstOrDefault(acc => acc.Name == settings.AccentColor);
+						if (accent != null)
+							ChangeAccentCommand.Execute(accent);
+						var theme = Themes.FirstOrDefault(t => t.Name == settings.Theme);
+						if (theme != null)
+							ChangeThemeCommand.Execute(theme);
+					}
+				}
+			}
+			catch {
+			}
+		}
+
+		public void SaveSettings() {
+			var style = ThemeManager.DetectAppStyle();
+			var settings = new Settings {
+				AlwaysOnTop = AlwaysOnTop,
+				AccentColor = style.Item2.Name,
+				Theme = style.Item1.Name,
+			};
+			try {
+				using (var fs = new FileStream(GetSettingsPath(), FileMode.Create)) {
+					var serializer = new DataContractSerializer(typeof(Settings));
+					serializer.WriteObject(fs, settings);
+				}
+			}
+			catch {
+			}
+		}
 
 	}
 }

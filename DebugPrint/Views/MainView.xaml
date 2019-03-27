@@ -44,6 +44,8 @@
             <MenuItem Header="_Capture">
                 <MenuItem Header="Capture _Kernel Mode" IsChecked="{Binding IsRunningKernel}" IsCheckable="True" />
                 <MenuItem Header="Capture _User Mode" IsChecked="{Binding IsRunningUser}" IsCheckable="True" />
+                <Separator />
+                <MenuItem Header="_Filters..." Icon="{z:Image /icons/filter.ico, Width=16, Height=16}" Command="{Binding ShowFiltersCommand}" />
             </MenuItem>
             <MenuItem Header="_Options">
                 <MenuItem Header="_Always On Top" IsCheckable="True" IsChecked="{Binding AlwaysOnTop}" />
@@ -91,7 +93,7 @@
                 <DataGridTextColumn Header="U / K" Binding="{Binding KernelOrUser}" MinWidth="60" FontFamily="Consolas" />
                 <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" MinWidth="80" ElementStyle="{StaticResource RightAlignTextBlock}"  />
                 <DataGridTextColumn Header="TID" Binding="{Binding ThreadId}" MinWidth="80" ElementStyle="{StaticResource RightAlignTextBlock}"  />
-                <DataGridTextColumn Header="Component" Binding="{Binding ComponentAsString}" MinWidth="40" SortMemberPath="Component"  />
+                <DataGridTextColumn Header="Component" Binding="{Binding ComponentAsString}" MinWidth="40" SortMemberPath="Component" ElementStyle="{StaticResource RightAlignTextBlock}" />
                 <DataGridTextColumn Header="Process Name" Binding="{Binding ProcessName}" MinWidth="100" FontWeight="Bold"  />
                 <DataGridTextColumn Header="Text" Binding="{Binding Text}" MinWidth="200" MaxWidth="1600" ElementStyle="{StaticResource WrappingTextBlock}" />
             </DataGrid.Columns>

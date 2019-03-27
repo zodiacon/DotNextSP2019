@@ -14,9 +14,6 @@
     <metro:MetroWindow.Resources>
         <z:BindingProxy x:Key="Proxy" Data="{Binding}" />
     </metro:MetroWindow.Resources>
-    <metro:MetroWindow.DataContext>
-        <vm:MainViewModel />
-    </metro:MetroWindow.DataContext>
 
     <metro:MetroWindow.RightWindowCommands>
         <metro:WindowCommands>

@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkMonitor", "NetworkMo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugPrint", "DebugPrint\DebugPrint.csproj", "{9E991402-0E00-4871-A2FF-D730FD3EDB80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClrLogger", "ClrLogger\ClrLogger.csproj", "{75E670DD-2A9C-44DA-B47B-18C5FD06EF96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Filtering.Core", "Filtering.Core\Filtering.Core.csproj", "{B0BD9D6F-8AB2-4768-BD83-5E00792BFDEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{9E991402-0E00-4871-A2FF-D730FD3EDB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E991402-0E00-4871-A2FF-D730FD3EDB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E991402-0E00-4871-A2FF-D730FD3EDB80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75E670DD-2A9C-44DA-B47B-18C5FD06EF96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75E670DD-2A9C-44DA-B47B-18C5FD06EF96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75E670DD-2A9C-44DA-B47B-18C5FD06EF96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75E670DD-2A9C-44DA-B47B-18C5FD06EF96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0BD9D6F-8AB2-4768-BD83-5E00792BFDEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0BD9D6F-8AB2-4768-BD83-5E00792BFDEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0BD9D6F-8AB2-4768-BD83-5E00792BFDEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0BD9D6F-8AB2-4768-BD83-5E00792BFDEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
