@@ -30,7 +30,8 @@ using Zodiacon.WPF;
 namespace DebugPrint.ViewModels {
 	sealed class MainViewModel : BindableBase, IDisposable {
 		public ObservableCollection<DebugItem> DebugItems { get; } = new ObservableCollection<DebugItem>();
-
+		public ObservableCollection<FilterViewModel> Filters { get; private set; } = new ObservableCollection<FilterViewModel>();
+		
 		readonly KernelTrace _trace;
 		readonly Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 		readonly EventWaitHandle _dataReadyEvent, _bufferReadyEvent;
@@ -54,8 +55,6 @@ namespace DebugPrint.ViewModels {
 
 			_mmf = MemoryMappedFile.CreateOrOpen("DBWIN_BUFFER", _bufferSize);
 			_stm = _mmf.CreateViewStream();
-
-			//_filterManager.Filters.Add(new ProcessNameFilter(Relation.Equals, "devenv"));
 		}
 
 		private void OnEvent(IEventRecord record) {
@@ -72,21 +71,37 @@ namespace DebugPrint.ViewModels {
 		}
 
 		void AddDebugItem(DebugItem item) {
-			foreach (var filter in _filterManager.Filters) {
+			if(Filters.Count == 0)
+				_dispatcher.InvokeAsync(() => DebugItems.Add(item));
+
+			foreach (var (filter, result) in _filterManager.Filters) {
 				if (filter.Eval(item)) {
-					_dispatcher.InvokeAsync(() => DebugItems.Add(item));
-					break;
+					if(result == FilterResult.Include)
+						_dispatcher.InvokeAsync(() => DebugItems.Add(item));
+					return;
 				}
 			}
 		}
 
 		public DelegateCommand ShowFiltersCommand => new DelegateCommand(() => {
-			var vm = UI.DialogService.CreateDialog<FilterEditingViewModel, FilterEditingView>();
+			var vm = UI.DialogService.CreateDialog<FilterEditingViewModel, FilterEditingView>(Filters);
 			if (vm.ShowDialog() == true) {
 				// update filters
-
+				Filters = vm.Filters;
+				RaisePropertyChanged(nameof(Filters));
+				BuildFilters();
 			}
 		});
+
+		private void BuildFilters() {
+			_filterManager.Filters.Clear();
+			foreach (var filter in Filters) {
+				var result = (FilterResult)Enum.Parse(typeof(FilterResult), filter.Action);
+				var dfilter = new DebugItemGenericFilter((Relation)Enum.Parse(typeof(Relation), filter.Relation.ToEnum()), filter.Value, 
+					(DebugItemFilterType)Enum.Parse(typeof(DebugItemFilterType), filter.Property.ToEnum()));
+				_filterManager.Filters.Add((dfilter, result));
+			}
+		}
 
 		private string TryGetProcessName(uint processId) {
 			try {

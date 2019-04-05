@@ -12,22 +12,15 @@ using Zodiacon.WPF;
 
 namespace DebugPrint.ViewModels {
 	sealed class FilterEditingViewModel : DialogViewModelBase {
-		public FilterEditingViewModel(System.Windows.Window dialog) : base(dialog) {
-			Filters.Add(new FilterViewModel { Property = "Process Name", Relation = "Contains" });
-			Filters.Add(new FilterViewModel { Property = "Process Id", Relation = "Equals" });
-			Filters.Add(new FilterViewModel { Property = "Text", Relation = "Begins With" });
+		public FilterEditingViewModel(System.Windows.Window dialog, IEnumerable<FilterViewModel> filters) : base(dialog) {
+			Filters = new ObservableCollection<FilterViewModel>(filters);
 		}
 
-		public ObservableCollection<FilterViewModel> Filters { get; } = new ObservableCollection<FilterViewModel>();
+        public ObservableCollection<FilterViewModel> Filters { get; }
 
 		static string[] _allRelations = { "Equals", "Not Equals", "Contains", "Greater Than", "Less Than", "Starts With", "Ends With" };
 		static string[] _allProperties = { "Process Name", "Process Id", "Thread Id", "Component", "Text" };
 		static string[] _allActions = { "Include", "Exclude" };
-
-		static FilterEditingViewModel() {
-			//Array.Sort(_allProperties);
-			//Array.Sort(_allRelations);
-		}
 
 		public string[] AllRelations => _allRelations;
 		public string[] AllProperties => _allProperties;
@@ -52,8 +45,7 @@ namespace DebugPrint.ViewModels {
 		public DelegateCommandBase MoveUpCommand => new DelegateCommand(() => {
 			var index = SelectedIndex;
 			var f1 = Filters[index];
-			var f2 = Filters[index - 1];
-			Filters[index] = f2;
+			Filters[index] = Filters[index - 1];
 			Filters[index - 1] = f1;
 			SelectedFilter = f1;
 		}, () => SelectedIndex > 0).ObservesProperty(() => SelectedIndex);
@@ -61,8 +53,7 @@ namespace DebugPrint.ViewModels {
 		public DelegateCommandBase MoveDownCommand => new DelegateCommand(() => {
 			var index = SelectedIndex;
 			var f1 = Filters[index];
-			var f2 = Filters[index + 1];
-			Filters[index] = f2;
+			Filters[index] = Filters[index + 1];
 			Filters[index + 1] = f1;
 			SelectedFilter = f1;
 		}, () => SelectedIndex >= 0 && SelectedIndex < Filters.Count - 1).ObservesProperty(() => SelectedIndex);

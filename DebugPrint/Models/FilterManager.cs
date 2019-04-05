@@ -6,8 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DebugPrint.Models {
+	enum FilterResult {
+		Include,
+		Exclude,
+	}
+
 	class FilterManager {
-		public List<IFilter> Filters { get; } = new List<IFilter>(4);
+		public List<(IFilter filter, FilterResult result)> Filters { get; } = new List<(IFilter, FilterResult)>(4);
 
 
 	}

@@ -1,4 +1,5 @@
-﻿using DebugPrint.ViewModels;
+﻿using DebugPrint.Models;
+using DebugPrint.ViewModels;
 using Filtering.Core;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,6 @@ namespace DebugPrint.Filters {
 	}
 
 	sealed class DebugItemGenericFilter : FilterBase<DebugItem> {
-		public bool Include { get; set; } = true;
 		public DebugItemFilterType Type { get; set; }
 
 		public DebugItemGenericFilter(Relation relation, object value, DebugItemFilterType type) {
@@ -33,6 +33,10 @@ namespace DebugPrint.Filters {
 					return EvalInt32(context.ProcessId);
 				case DebugItemFilterType.Text:
 					return EvalString(context.Text);
+				case DebugItemFilterType.Component:
+					return EvalInt32(context.Component == null ? 0 : (int)(context.Component));
+				case DebugItemFilterType.ThreadId:
+					return EvalInt32(context.ThreadId == null ? 0 : (int)(context.ThreadId));
 			}
 			throw new NotImplementedException();
 		}

@@ -12,13 +12,16 @@ namespace Filtering.Core {
 		public abstract bool Eval(object context);
 
 		protected virtual bool EvalString(string value) {
+			if (TargetValue == null)
+				return false;
+
 			switch (Relation) {
 				case Relation.Equals:
 					return value.Equals(TargetValue.ToString(), StringComparison.InvariantCultureIgnoreCase);
 				case Relation.NotEquals:
 					return !value.Equals(TargetValue.ToString(), StringComparison.InvariantCultureIgnoreCase);
 				case Relation.Contains:
-					return TargetValue.ToString().Contains(value);
+					return value.IndexOf(TargetValue.ToString(), StringComparison.CurrentCultureIgnoreCase) >= 0;
 			}
 
 			return false;

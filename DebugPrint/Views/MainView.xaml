@@ -65,7 +65,14 @@
                 </StackPanel>
             </ToggleButton>
             <Button Margin="2" Content="{z:Image /icons/copy.ico, Width=20, Height=20}" Command="{Binding CopyCommand}" Style="{StaticResource MetroFlatButton}" ToolTip="Copy" />
-            
+
+            <Button Margin="2" Command="{Binding ShowFiltersCommand}" Style="{StaticResource MetroFlatButton}" ToolTip="Edit Filters">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/icons/filter.ico" Width="20" Height="20" />
+                    <TextBlock Text="Filters" Margin="4,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
             <Button Margin="20,2,2,2" Command="{Binding ClearAllCommand}" Style="{StaticResource MetroFlatButton}" ToolTip="Clear All">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/icons/delete.ico" Width="20" Height="20" />
