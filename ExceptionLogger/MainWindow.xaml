@@ -1,0 +1,12 @@
+﻿<metro:MetroWindow x:Class="ExceptionLogger.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExceptionLogger"
+        xmlns:vm="clr-namespace:ExceptionLogger.ViewModels"
+        mc:Ignorable="d"
+        Title="Exception Logger" MinHeight="450" MinWidth="650" TitleCaps="False">
+    <vm:MainViewModel />
+</metro:MetroWindow>

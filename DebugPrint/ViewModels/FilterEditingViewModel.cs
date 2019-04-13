@@ -16,7 +16,7 @@ namespace DebugPrint.ViewModels {
 			Filters = new ObservableCollection<FilterViewModel>(filters);
 		}
 
-        public ObservableCollection<FilterViewModel> Filters { get; }
+		public ObservableCollection<FilterViewModel> Filters { get; }
 
 		static string[] _allRelations = { "Equals", "Not Equals", "Contains", "Greater Than", "Less Than", "Starts With", "Ends With" };
 		static string[] _allProperties = { "Process Name", "Process Id", "Thread Id", "Component", "Text" };

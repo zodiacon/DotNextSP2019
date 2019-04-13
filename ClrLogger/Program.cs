@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace ClrLogger {
 	class Context {
 		public int ProcessId;
-		Dictionary<string, int> _exceptions = new Dictionary<string, int>(16);
+		readonly Dictionary<string, int> _exceptions = new Dictionary<string, int>(16);
 
 		public IReadOnlyDictionary<string, int> Exceptions => _exceptions;
 
@@ -68,7 +68,7 @@ namespace ClrLogger {
 			if (IgnoreProcess(obj))
 				return;
 
-			Console.WriteLine($"Exception thrown (PID={obj.ProcessID}) ({GetProcessName(obj)}): {obj.ExceptionType} : {obj.ExceptionMessage}");
+			Console.WriteLine($"Exception thrown (PID:{obj.ProcessID}) ({GetProcessName(obj)}): Type: {obj.ExceptionType} : {obj.ExceptionMessage}");
 			context.AddException(obj.ExceptionType);
 		}
 

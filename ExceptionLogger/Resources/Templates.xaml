@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:ExceptionLogger.ViewModels"
+                    xmlns:view="clr-namespace:ExceptionLogger.Views"
+                    >
+    <DataTemplate DataType="{x:Type vm:MainViewModel}">
+        <view:MainView />
+    </DataTemplate>
+</ResourceDictionary>
