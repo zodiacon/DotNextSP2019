@@ -5,8 +5,8 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FA550A23-126B-4C9C-A5DB-AD35A196E900}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{01A753BF-3755-4B67-BBB4-EFA8AC66B1EE}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <RootNamespace>ExceptionLogger</RootNamespace>
     <AssemblyName>ExceptionLogger</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -41,6 +41,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icons\app.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
@@ -98,9 +101,14 @@
     </ApplicationDefinition>
     <Compile Include="Extensions.cs" />
     <Compile Include="Models\RunningException.cs" />
+    <Compile Include="ViewModels\CallStackEntryViewModel.cs" />
+    <Compile Include="ViewModels\CallStackViewModel.cs" />
     <Compile Include="ViewModels\ExceptionCounterViewModel.cs" />
     <Compile Include="ViewModels\ExceptionViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\CallStackView.xaml.cs">
+      <DependentUpon>CallStackView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
@@ -117,6 +125,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Resources\Templates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CallStackView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -154,6 +166,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\stack.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

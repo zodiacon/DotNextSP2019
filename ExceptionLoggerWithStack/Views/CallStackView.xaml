@@ -1,0 +1,20 @@
+﻿<metro:MetroWindow x:Class="ExceptionLogger.Views.CallStackView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExceptionLogger.Views"
+        mc:Ignorable="d"
+        Title="{Binding Title}" MinHeight="400" MinWidth="600" TitleCaps="False" Icon="/icons/stack.ico">
+    <Grid Margin="4">
+        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding CallStack}" IsReadOnly="True" metro:ButtonHelper.PreserveTextCase="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Depth" Binding="{Binding Depth}" />
+                <DataGridTextColumn Header="Address" Binding="{Binding Address, StringFormat=0x\{0:X\}}" />
+                <DataGridTextColumn Header="Method Name" Binding="{Binding MethodName}" FontWeight="Bold" />
+                <DataGridTextColumn Header="Module Name" Binding="{Binding ModuleName}" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</metro:MetroWindow>
