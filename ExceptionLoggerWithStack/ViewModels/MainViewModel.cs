@@ -26,7 +26,6 @@ namespace ExceptionLogger.ViewModels {
 
 		readonly Dictionary<RunningException, ExceptionViewModel> _runningExceptions = new Dictionary<RunningException, ExceptionViewModel>(64);
 		readonly Dictionary<(int pid, string type), ExceptionCounterViewModel> _exceptionAggregator = new Dictionary<(int pid, string type), ExceptionCounterViewModel>(128);
-		//readonly List<ExceptionViewModel> _exceptionBuffer = new List<ExceptionViewModel>(256);
 
 		TraceEventSession _session;
 		TraceLogEventSource _traceLog;
