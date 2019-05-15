@@ -39,6 +39,7 @@ namespace ExceptionLogger.ViewModels {
 				_session = new TraceEventSession("ExceptionLoggerSession");
 				_session.EnableProvider(ClrTraceEventParser.ProviderGuid);
 				var parser = _session.Source.Clr;
+
 				parser.ExceptionStart += OnExceptionStart;
 				parser.ExceptionStop += OnExceptionStop;
 				parser.ExceptionCatchStart += OnExceptionCatchStart;

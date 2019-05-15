@@ -31,7 +31,7 @@ namespace DebugPrint.ViewModels {
 	sealed class MainViewModel : BindableBase, IDisposable {
 		public ObservableCollection<DebugItem> DebugItems { get; } = new ObservableCollection<DebugItem>();
 		public ObservableCollection<FilterViewModel> Filters { get; private set; } = new ObservableCollection<FilterViewModel>();
-		
+
 		readonly KernelTrace _trace;
 		readonly Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
 		readonly EventWaitHandle _dataReadyEvent, _bufferReadyEvent;
