@@ -145,5 +145,10 @@ namespace ExceptionLogger.ViewModels {
 			win.Show();
 		});
 
+		public DelegateCommandBase ClearCommand => new DelegateCommand(() => {
+			Exceptions.Clear();
+			_runningExceptions.Clear();
+			_exceptionAggregator.Clear();
+		}, () => !IsLogging).ObservesProperty(() => IsLogging);
 	}
 }

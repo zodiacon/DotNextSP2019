@@ -3,6 +3,7 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Parsers.Clr;
 using Microsoft.Diagnostics.Tracing.Session;
+using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -21,17 +22,11 @@ namespace ExceptionLogger.ViewModels {
 
 		readonly Dictionary<RunningException, ExceptionViewModel> _runningExceptions = new Dictionary<RunningException, ExceptionViewModel>(64);
 		readonly Dictionary<(int pid, string type), ExceptionCounterViewModel> _exceptionAggregator = new Dictionary<(int pid, string type), ExceptionCounterViewModel>(128);
-		//readonly List<ExceptionViewModel> _exceptionBuffer = new List<ExceptionViewModel>(256);
 
 		TraceEventSession _session;
 		readonly Dispatcher _dispatcher = Dispatcher.CurrentDispatcher;
-		readonly DispatcherTimer _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
 
 		public MainViewModel() {
-			_timer.Tick += OnTick;
-		}
-
-		private void OnTick(object sender, EventArgs e) {
 		}
 
 		void EnableLogging(bool enable) {
@@ -118,6 +113,12 @@ namespace ExceptionLogger.ViewModels {
 				}
 			}
 		}
+
+		public DelegateCommandBase ClearCommand => new DelegateCommand(() => {
+			Exceptions.Clear();
+			_runningExceptions.Clear();
+			_exceptionAggregator.Clear();
+		}, () => !IsLogging).ObservesProperty(() => IsLogging);
 
 	}
 }

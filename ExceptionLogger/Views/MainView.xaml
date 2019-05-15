@@ -16,10 +16,11 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="2" >
             <ToggleButton IsChecked="{Binding IsLogging}" Content="Log Exceptions" Style="{StaticResource MetroFlatToggleButton}" Margin="4,2"/>
+            <Button Command="{Binding ClearCommand}" Content="Clear" Style="{StaticResource MetroFlatButton}" Margin="4,2"/>
         </StackPanel>
         <TextBox Grid.Row="1" Text="{Binding SearchText, Delay=300, UpdateSourceTrigger=PropertyChanged}" Width="300" Margin="2"
                  metro:TextBoxHelper.Watermark="Type to filter" metro:TextBoxHelper.ClearTextButton="True" HorizontalAlignment="Left" />
-        
+
         <DataGrid Grid.Row="2" IsReadOnly="True" AutoGenerateColumns="False" metro:ButtonHelper.PreserveTextCase="True" Margin="2" ItemsSource="{Binding Exceptions}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Time" Binding="{Binding TimeAsString}" />
@@ -37,7 +38,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="PID" Binding="{Binding ProcessId}" />
                 <DataGridTextColumn Header="Name" Binding="{Binding ProcessName}" />
-                <DataGridTextColumn Header="Type" Binding="{Binding ExceptionType}" />
+                <DataGridTextColumn Header="Type" Binding="{Binding ExceptionType}" FontWeight="Bold" />
                 <DataGridTextColumn Header="# Exceptions" Binding="{Binding Count}" />
             </DataGrid.Columns>
         </DataGrid>

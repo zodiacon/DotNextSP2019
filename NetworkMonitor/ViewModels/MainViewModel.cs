@@ -27,6 +27,7 @@ namespace NetworkMonitor.ViewModels {
 		bool _isRunning;
 
 		public ObservableCollection<NetworkConnection> ActiveConnections { get; } = new ObservableCollection<NetworkConnection>();
+
 		readonly Dictionary<ConnectionKey, int> _connectionMap = new Dictionary<ConnectionKey, int>(128);
 		readonly Dictionary<IPAddress, string> _dnsCache = new Dictionary<IPAddress, string>(64);
 

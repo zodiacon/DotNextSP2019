@@ -20,10 +20,11 @@ namespace ExceptionLogger.ViewModels {
 			_data = data;
 			_stack = stack;
 			_reader = reader;
+			ProcessName = GetProcessName();
 		}
 
 		public int ProcessId => _data.ProcessID;
-		public string ProcessName => GetProcessName();
+		public string ProcessName { get; }
 
 		public string ExceptionType => _data.ExceptionType;
 		public ExceptionThrownFlags ExceptionFlags => _data.ExceptionFlags;

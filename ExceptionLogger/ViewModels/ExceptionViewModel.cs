@@ -12,10 +12,11 @@ namespace ExceptionLogger.ViewModels {
 		readonly ExceptionTraceData _data;
 		public ExceptionViewModel(ExceptionTraceData data) {
 			_data = data;
+			ProcessName = GetProcessName();
 		}
 
 		public int ProcessId => _data.ProcessID;
-		public string ProcessName => GetProcessName();
+		public string ProcessName { get; }
 
 		public string ExceptionType => _data.ExceptionType;
 		public ExceptionThrownFlags ExceptionFlags => _data.ExceptionFlags;

@@ -7,6 +7,6 @@
         xmlns:local="clr-namespace:ExceptionLogger"
         xmlns:vm="clr-namespace:ExceptionLogger.ViewModels"
         mc:Ignorable="d"
-        Title="Exception Logger (with Stacks)" MinHeight="450" MinWidth="650" TitleCaps="False" Icon="icons/app.ico">
+        Title="Exception Logger" MinHeight="450" MinWidth="650" TitleCaps="False" Icon="icons/app.ico">
     <vm:MainViewModel />
 </metro:MetroWindow>
