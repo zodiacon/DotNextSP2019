@@ -1,4 +1,5 @@
-﻿using Microsoft.Diagnostics.Tracing.Parsers;
+﻿using Microsoft.Diagnostics.Tracing;
+using Microsoft.Diagnostics.Tracing.Parsers;
 using Microsoft.Diagnostics.Tracing.Session;
 using System;
 using System.Collections.Generic;
@@ -32,18 +33,18 @@ namespace SimpleKernelConsumer {
 				};
 				parser.ProcessStop += e => {
 					Console.ForegroundColor = ConsoleColor.Red;
-					Console.WriteLine($"{e.TimeStamp}.{e.TimeStamp.Millisecond:D3}: Process {e.ProcessID} ({TryGetProcessName(e.ProcessID)}) Exited");
+					Console.WriteLine($"{e.TimeStamp}.{e.TimeStamp.Millisecond:D3}: Process {e.ProcessID} {TryGetProcessName(e)} Exited");
 				};
 
 				parser.ImageLoad += e => {
 					Console.ForegroundColor = ConsoleColor.Yellow;
-					var name = string.IsNullOrEmpty(e.ProcessName) ? processes[e.ProcessID].Name : e.ProcessName;
+					var name = TryGetProcessName(e);
 					Console.WriteLine($"{e.TimeStamp}.{e.TimeStamp.Millisecond:D3}: Image Loaded: {e.FileName} into process {e.ProcessID} ({name}) Size=0x{e.ImageSize:X}");
 				};
 
 				parser.ImageUnload += e => {
 					Console.ForegroundColor = ConsoleColor.DarkYellow;
-					var name = string.IsNullOrEmpty(e.ProcessName) ? TryGetProcessName(e.ProcessID) : e.ProcessName;
+					var name = TryGetProcessName(e);
 					Console.WriteLine($"{e.TimeStamp}.{e.TimeStamp.Millisecond:D3}: Image Unloaded: {e.FileName} from process {e.ProcessID} ({name})");
 				};
 
@@ -51,11 +52,11 @@ namespace SimpleKernelConsumer {
 				Thread.Sleep(TimeSpan.FromSeconds(60));
 			}
 
-			string TryGetProcessName(int pid) {
-				return processes.TryGetValue(pid, out var info) ? info.Name : string.Empty;
+			string TryGetProcessName(TraceEvent evt) {
+				if (!string.IsNullOrEmpty(evt.ProcessName))
+					return evt.ProcessName;
+				return processes.TryGetValue(evt.ProcessID, out var info) ? info.Name : string.Empty;
 			}
-
 		}
-
-		}
+	}
 }
