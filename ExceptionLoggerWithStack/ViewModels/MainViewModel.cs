@@ -62,7 +62,8 @@ namespace ExceptionLogger.ViewModels {
 			}
 			else {
 				_traceLog.Dispose();
-				_session.Stop();
+				_session.Dispose();
+				_session = null;
 			}
 		}
 
@@ -147,6 +148,7 @@ namespace ExceptionLogger.ViewModels {
 
 		public DelegateCommandBase ClearCommand => new DelegateCommand(() => {
 			Exceptions.Clear();
+			AggregatedExceptions.Clear();
 			_runningExceptions.Clear();
 			_exceptionAggregator.Clear();
 		}, () => !IsLogging).ObservesProperty(() => IsLogging);
